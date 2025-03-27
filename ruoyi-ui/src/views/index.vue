@@ -1,7 +1,7 @@
 <template>
   <div class="app-container home">
     <el-row :gutter="20">
-      药品进销存管理系统-小牛开发
+      药品进销存管理系统
     </el-row>
   </div>
 </template>
