@@ -3,7 +3,9 @@ package com.ruoyi.monitor.service;
 import com.ruoyi.monitor.domain.Log;
 import com.ruoyi.monitor.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class RedisService {
 
     public static final String REDIS_WRITE_PREFIX = "monitor:redis_write:";

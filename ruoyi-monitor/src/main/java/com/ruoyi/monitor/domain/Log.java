@@ -14,7 +14,7 @@ import java.time.Instant;
 public class Log {
 
     private String id = UUID.randomUUID().toString();
-    private String trackId = UUID.randomUUID().toString();
+    private String trackId;
     private Timestamp time = Timestamp.from(Instant.now());
     private String level;
     private String group;
