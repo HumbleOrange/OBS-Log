@@ -1,7 +1,11 @@
 package com.ruoyi.monitor.store;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.ruoyi.common.utils.uuid.UUID;
+import com.ruoyi.monitor.core.LogService;
 import com.ruoyi.monitor.domain.Log;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,8 +15,11 @@ import java.io.IOException;
 @Service
 public class Store {
 
-    public void store(Log log) {
+    @Autowired
+    private LogService logService;
 
+    public void store(Log log) {
+        logService.insertLog(log);
     }
 
     public void submit(HttpServletRequest request, String level, String message, String exception, String type, Class clazz) {
@@ -29,9 +36,18 @@ public class Store {
         log.setMessage(message);
         log.setType(type);
         log.setAddress(request.getRemoteAddr());
-        log.setContext(getRequestBody(request));
-        log.setBusinessId(request.getParameter("businessId"));
-        String username = request.getParameter("username");
+        String requestBody = getRequestBody(request);
+        log.setContext(requestBody);
+        JSONObject jsonObject = JSON.parseObject(requestBody);
+        String businessId = jsonObject.getString("businessId");
+        if(businessId == null) {
+            businessId = request.getParameter("businessId");
+        }
+        log.setBusinessId(businessId);
+        String username = jsonObject.getString("username");
+        if(username == null) {
+            username = request.getParameter("username");
+        }
         log.setOwner(username == null ? "admin" : username);
         log.setException(exception);
         store(log);

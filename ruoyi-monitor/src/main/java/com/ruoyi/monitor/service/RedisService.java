@@ -14,7 +14,11 @@ public class RedisService {
     @Autowired
     private RedisUtil redisUtil;
 
-    public boolean insert(Log log) {
+    public boolean insertToWrite(Log log) {
         return redisUtil.lSet(REDIS_WRITE_PREFIX + log.getTrackId(), log);
+    }
+
+    public void delete(String trackId) {
+        redisUtil.del(REDIS_WRITE_PREFIX + trackId);
     }
 }

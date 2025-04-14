@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 public interface LogMapper {
 
     @Insert("INSERT INTO monitor_index VALUES(#{id}, #{trackId}, #{time}, #{level}, #{group}, #{type}, #{businessId}})")
-    int insert(Log log);
+    int insertIndex(Log log);
 
     @Insert("INSERT INTO monitor_log VALUES(#{id}, #{trackId}, #{time}, #{level}, #{group}, #{message}, #{type}, #{address}, #{context}, #{businessId}, #{owner}, #{exception})")
     int insertLog(Log log);
