@@ -29,6 +29,7 @@ public class Store {
             trackId = UUID.randomUUID().toString();
             request.setAttribute("trackId", trackId);
         }
+        log.setTrackId(trackId);
         log.setLevel(level);
         if(clazz != null) {
             log.setGroup(clazz.getName());

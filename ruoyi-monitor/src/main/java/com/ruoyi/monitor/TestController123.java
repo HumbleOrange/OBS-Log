@@ -4,10 +4,12 @@ import com.ruoyi.monitor.domain.Log;
 import com.ruoyi.monitor.service.ObsService;
 import com.ruoyi.monitor.service.RedisService;
 import com.ruoyi.monitor.store.Store;
+import com.ruoyi.monitor.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequestMapping("/monitor/test")
@@ -19,11 +21,18 @@ public class TestController123 {
     private ObsService obsService;
     @Autowired
     private Store store;
+    @Autowired
+    private Task task;
 
     @PostMapping("/lset")
     public boolean redisInsert(HttpServletRequest request, @RequestBody Log log) {
         boolean succeed = redisService.insertToWrite(log);
         return succeed;
+    }
+
+    @GetMapping("/lget")
+    public List<Log> redisGet(@RequestParam String trackId) {
+        return redisService.getFromWrite(trackId);
     }
 
     @PostMapping("/test")
@@ -49,5 +58,10 @@ public class TestController123 {
     public boolean obsDel(@RequestParam String key) {
         obsService.delete(key);
         return true;
+    }
+
+    @GetMapping("/transfer")
+    public void transfer() {
+        task.transferFromRedisToObs();
     }
 }

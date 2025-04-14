@@ -496,5 +496,4 @@ public final class RedisUtil {
             return 0;
         }
     }
-
 }
