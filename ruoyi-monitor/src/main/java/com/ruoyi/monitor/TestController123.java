@@ -70,4 +70,9 @@ public class TestController123 {
     public void transfer() {
         task.transferFromRedisToObs();
     }
+
+    @GetMapping("/delete")
+    public void deleteExpiredLogs() {
+        task.deleteExpiredLogs();
+    }
 }

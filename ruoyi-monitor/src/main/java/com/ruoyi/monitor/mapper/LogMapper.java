@@ -34,4 +34,12 @@ public interface LogMapper {
     Integer getPosition(String trackId);
 
     List<Index> getIndex(QLog qLog);
+
+    List<String> getExpiredLogTrackIds(@Param("day") int day, @Param("limit") int limit);
+
+    @Delete("DELETE FROM monitor_index WHERE track_id = #{trackId}")
+    int deleteIndex(String trackId);
+
+    @Delete("DELETE FROM monitor_position WHERE track_id = #{trackId}")
+    int deletePosition(String trackId);
 }

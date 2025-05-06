@@ -21,6 +21,14 @@
         LIMIT #{limit}
     </select>
 
+    <select id="getExpiredLogTrackIds" resultType="String">
+        SELECT DISTINCT track_id
+        FROM monitor_index
+        WHERE time &lt;= DATE_SUB(CURDATE(), INTERVAL #{day} DAY)
+        ORDER BY `time` DESC
+        LIMIT #{limit}
+    </select>
+
     <select id="getIndex" resultMap="IndexResultMap">
         SELECT *
         FROM monitor_index
@@ -44,6 +52,7 @@
                 AND `type` = #{type}
             </if>
         </where>
+        ORDER BY `time` DESC
     </select>
 
 </mapper>
