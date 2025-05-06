@@ -43,9 +43,9 @@ public class TestController123 {
 
     @PostMapping("/test")
     public boolean test() {
-        store.submit("INFO", "方法开始调用", null, "测试", this.getClass());
-        store.submit("INFO", "方法调用中", null, "测试", this.getClass());
-        store.submit("INFO", "方法结束调用", null, "测试", this.getClass());
+        store.submit("DEBUG", "方法开始调用", null, "测试", this.getClass());
+        store.submit("DEBUG", "方法调用中", null, "测试", this.getClass());
+        store.submit("DEBUG", "方法结束调用", null, "测试", this.getClass());
         return true;
     }
 

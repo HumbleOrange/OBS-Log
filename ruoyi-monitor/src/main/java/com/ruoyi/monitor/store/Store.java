@@ -48,11 +48,14 @@ public class Store {
         String requestBody = getRequestBody(request);
         log.setContext(requestBody);
         JSONObject jsonObject = JSON.parseObject(requestBody);
+        if (jsonObject == null) {
+            jsonObject = new JSONObject();
+        }
         String businessId = jsonObject.getString("businessId");
         if(businessId == null) {
             businessId = request.getParameter("businessId");
         }
-        log.setBusinessId(businessId);
+        log.setBusinessId(businessId == null ? "default business id" : businessId);
         String username = jsonObject.getString("username");
         if(username == null) {
             username = request.getParameter("username");

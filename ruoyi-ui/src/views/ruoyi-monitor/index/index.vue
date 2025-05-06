@@ -53,54 +53,11 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['ruoyi-monitor:index:add']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['ruoyi-monitor:index:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['ruoyi-monitor:index:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['ruoyi-monitor:index:export']"
-        >导出</el-button>
-      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="indexList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" align="center" prop="id" />
       <el-table-column label="跟踪号" align="center" prop="trackId" />
       <el-table-column label="时间" align="center" prop="time" width="180">
         <template slot-scope="scope">
@@ -119,21 +76,34 @@
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['ruoyi-monitor:index:edit']"
-          >修改</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['ruoyi-monitor:index:remove']"
-          >删除</el-button>
+            icon="el-icon-view"
+            @click="handleDetail(scope.row)"
+          >详情</el-button>
         </template>
       </el-table-column>
     </el-table>
-    
+
+    <!-- 详情对话框 -->
+    <el-dialog :title="'日志详情'" :visible.sync="dialogVisible" width="800px" append-to-body>
+      <el-descriptions :column="2" border>
+        <el-descriptions-item label="ID">{{ logDetail.id }}</el-descriptions-item>
+        <el-descriptions-item label="跟踪号">{{ logDetail.trackId }}</el-descriptions-item>
+        <el-descriptions-item label="时间">{{ parseTime(logDetail.time) }}</el-descriptions-item>
+        <el-descriptions-item label="日志等级">{{ logDetail.level }}</el-descriptions-item>
+        <el-descriptions-item label="分组">{{ logDetail.group }}</el-descriptions-item>
+        <el-descriptions-item label="类型">{{ logDetail.type }}</el-descriptions-item>
+        <el-descriptions-item label="地址">{{ logDetail.address }}</el-descriptions-item>
+        <el-descriptions-item label="业务键">{{ logDetail.businessId }}</el-descriptions-item>
+        <el-descriptions-item label="所有者">{{ logDetail.owner }}</el-descriptions-item>
+        <el-descriptions-item label="消息" :span="2">{{ logDetail.message }}</el-descriptions-item>
+        <el-descriptions-item label="上下文" :span="2">{{ logDetail.context }}</el-descriptions-item>
+        <el-descriptions-item label="异常信息" :span="2">{{ logDetail.exception }}</el-descriptions-item>
+      </el-descriptions>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">关 闭</el-button>
+      </div>
+    </el-dialog>
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -142,47 +112,12 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改日志索引对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="跟踪号" prop="trackId">
-          <el-input v-model="form.trackId" placeholder="请输入跟踪号" />
-        </el-form-item>
-        <el-form-item label="时间" prop="time">
-          <el-date-picker clearable
-            v-model="form.time"
-            type="date"
-            value-format="yyyy-MM-dd"
-            placeholder="请选择时间">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="日志等级" prop="level">
-          <el-input v-model="form.level" placeholder="请输入日志等级" />
-        </el-form-item>
-        <el-form-item label="日志类型" prop="type">
-          <el-select v-model="form.type" placeholder="请选择日志类型">
-            <el-option
-              v-for="dict in dict.type.log_type"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="业务键" prop="businessId">
-          <el-input v-model="form.businessId" placeholder="请输入业务键" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
-      </div>
-    </el-dialog>
+
   </div>
 </template>
 
 <script>
-import { listIndex, getIndex, delIndex, addIndex, updateIndex } from "@/api/ruoyi-monitor/index";
+import { listIndex, getLog } from "@/api/ruoyi-monitor/index";
 
 export default {
   name: "Index",
@@ -223,7 +158,11 @@ export default {
       form: {},
       // 表单校验
       rules: {
-      }
+      },
+      // 详情对话框显示状态
+      dialogVisible: false,
+      // 日志详情数据
+      logDetail: {}
     };
   },
   created() {
@@ -244,22 +183,9 @@ export default {
         this.loading = false;
       });
     },
-    // 取消按钮
-    cancel() {
-      this.open = false;
-      this.reset();
-    },
     // 表单重置
     reset() {
-      this.form = {
-        id: null,
-        trackId: null,
-        time: null,
-        level: null,
-        type: null,
-        businessId: null
-      };
-      this.resetForm("form");
+      this.resetForm("queryForm");
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -275,60 +201,13 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
-      this.multiple = !selection.length
     },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加日志索引";
-    },
-    /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.reset();
-      const id = row.id || this.ids
-      getIndex(id).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改日志索引";
+    // 查看详情按钮操作
+    handleDetail(row) {
+      this.dialogVisible = true;
+      getLog(row.trackId, row.id).then(response => {
+        this.logDetail = response;
       });
-    },
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.id != null) {
-            updateIndex(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addIndex(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
-      });
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除日志索引编号为"' + ids + '"的数据项？').then(function() {
-        return delIndex(ids);
-      }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      this.download('ruoyi-monitor/index/export', {
-        ...this.queryParams
-      }, `index_${new Date().getTime()}.xlsx`)
     }
   }
 };

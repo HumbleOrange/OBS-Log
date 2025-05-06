@@ -2,6 +2,8 @@ package com.ruoyi.web.controller.pill;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.monitor.store.Store;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +36,9 @@ public class PillDrugController extends BaseController
     @Autowired
     private IPillDrugService pillDrugService;
 
+    @Autowired
+    private Store store;
+
     /**
      * 查询药品信息列表
      */
@@ -41,8 +46,11 @@ public class PillDrugController extends BaseController
     @GetMapping("/list")
     public TableDataInfo list(PillDrug pillDrug)
     {
+        store.submit("INFO", "开始查询药品信息列表", null, "查询", this.getClass());
         startPage();
         List<PillDrug> list = pillDrugService.selectPillDrugList(pillDrug);
+        store.submit("INFO", "药品信息列表分页", null, "查询", this.getClass());
+        store.submit("INFO", "结束查询药品信息列表", null, "查询", this.getClass());
         return getDataTable(list);
     }
 
@@ -66,6 +74,8 @@ public class PillDrugController extends BaseController
     @GetMapping(value = "/{drugId}")
     public AjaxResult getInfo(@PathVariable("drugId") Long drugId)
     {
+        store.submit("INFO", "开始获取药品信息详细信息", null, "查询", this.getClass());
+        store.submit("INFO", "结束获取药品信息详细信息", null, "查询", this.getClass());
         return success(pillDrugService.selectPillDrugByDrugId(drugId));
     }
 
@@ -77,6 +87,8 @@ public class PillDrugController extends BaseController
     @PostMapping
     public AjaxResult add(@RequestBody PillDrug pillDrug)
     {
+        store.submit("INFO", "开始新增药品信息", null, "插入", this.getClass());
+        store.submit("INFO", "结束新增药品信息", null, "插入", this.getClass());
         return toAjax(pillDrugService.insertPillDrug(pillDrug));
     }
 
@@ -88,6 +100,8 @@ public class PillDrugController extends BaseController
     @PutMapping
     public AjaxResult edit(@RequestBody PillDrug pillDrug)
     {
+        store.submit("INFO", "开始修改药品信息", null, "修改", this.getClass());
+        store.submit("INFO", "结束修改药品信息", null, "修改", this.getClass());
         return toAjax(pillDrugService.updatePillDrug(pillDrug));
     }
 
@@ -99,6 +113,8 @@ public class PillDrugController extends BaseController
 	@DeleteMapping("/{drugIds}")
     public AjaxResult remove(@PathVariable Long[] drugIds)
     {
+        store.submit("INFO", "开始删除药品信息", null, "删除", this.getClass());
+        store.submit("INFO", "结束删除药品信息", null, "删除", this.getClass());
         return toAjax(pillDrugService.deletePillDrugByDrugIds(drugIds));
     }
 }
