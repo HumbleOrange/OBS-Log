@@ -7,6 +7,8 @@ import com.ruoyi.monitor.core.LogService;
 import com.ruoyi.monitor.domain.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
@@ -22,7 +24,13 @@ public class Store {
         logService.insertLog(log);
     }
 
-    public void submit(HttpServletRequest request, String level, String message, String exception, String type, Class clazz) {
+    public void submit(String level, String message, String exception, String type, Class clazz) {
+        ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attrs == null) {
+            return;
+        }
+
+        HttpServletRequest request = attrs.getRequest();
         Log log = new Log();
         String trackId = (String) request.getAttribute("trackId");
         if(trackId == null || trackId.isEmpty()) {
@@ -54,24 +62,24 @@ public class Store {
         store(log);
     }
 
-    public void submit(HttpServletRequest request, String level, String message) {
-        submit(request, level, message, null, null, null);
+    public void submit(String level, String message) {
+        submit(level, message, null, null, null);
     }
 
-    public void submit(HttpServletRequest request, String level, String message, String exception) {
-        submit(request,level, message, exception, null, null);
+    public void submit(String level, String message, String exception) {
+        submit(level, message, exception, null, null);
     }
 
-    public void submit(HttpServletRequest request, String level, String message, String exception, String type) {
-        submit(request,level, message, exception, type, null);
+    public void submit(String level, String message, String exception, String type) {
+        submit(level, message, exception, type, null);
     }
 
-    public void submit(HttpServletRequest request, String level, String message, Class clazz) {
-        submit(request, level, message, null, null, clazz);
+    public void submit(String level, String message, Class clazz) {
+        submit(level, message, null, null, clazz);
     }
 
-    public void submit(HttpServletRequest request, String level, String message, String exception, Class clazz) {
-        submit(request, level, message, exception, null, clazz);
+    public void submit(String level, String message, String exception, Class clazz) {
+        submit(level, message, exception, null, clazz);
     }
 
     public String getRequestBody(HttpServletRequest request) {

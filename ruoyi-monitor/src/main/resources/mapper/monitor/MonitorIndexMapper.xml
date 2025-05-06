@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.monitor.monitor.mapper.MonitorIndexMapper">
+    
+    <resultMap type="MonitorIndex" id="MonitorIndexResult">
+        <result property="id"    column="id"    />
+        <result property="trackId"    column="track_id"    />
+        <result property="time"    column="time"    />
+        <result property="level"    column="level"    />
+        <result property="type"    column="type"    />
+        <result property="businessId"    column="business_id"    />
+    </resultMap>
+
+    <sql id="selectMonitorIndexVo">
+        select id, track_id, time, level, type, business_id from monitor_index
+    </sql>
+
+    <select id="selectMonitorIndexList" parameterType="MonitorIndex" resultMap="MonitorIndexResult">
+        <include refid="selectMonitorIndexVo"/>
+        <where>  
+            <if test="trackId != null  and trackId != ''"> and track_id = #{trackId}</if>
+            <if test="params.beginTime != null and params.beginTime != '' and params.endTime != null and params.endTime != ''"> and time between #{params.beginTime} and #{params.endTime}</if>
+            <if test="level != null  and level != ''"> and level = #{level}</if>
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="businessId != null  and businessId != ''"> and business_id = #{businessId}</if>
+        </where>
+    </select>
+    
+    <select id="selectMonitorIndexById" parameterType="String" resultMap="MonitorIndexResult">
+        <include refid="selectMonitorIndexVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertMonitorIndex" parameterType="MonitorIndex">
+        insert into monitor_index
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="trackId != null">track_id,</if>
+            <if test="time != null">time,</if>
+            <if test="level != null">level,</if>
+            <if test="type != null">type,</if>
+            <if test="businessId != null">business_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="trackId != null">#{trackId},</if>
+            <if test="time != null">#{time},</if>
+            <if test="level != null">#{level},</if>
+            <if test="type != null">#{type},</if>
+            <if test="businessId != null">#{businessId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMonitorIndex" parameterType="MonitorIndex">
+        update monitor_index
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="trackId != null">track_id = #{trackId},</if>
+            <if test="time != null">time = #{time},</if>
+            <if test="level != null">level = #{level},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="businessId != null">business_id = #{businessId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMonitorIndexById" parameterType="String">
+        delete from monitor_index where id = #{id}
+    </delete>
+
+    <delete id="deleteMonitorIndexByIds" parameterType="String">
+        delete from monitor_index where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

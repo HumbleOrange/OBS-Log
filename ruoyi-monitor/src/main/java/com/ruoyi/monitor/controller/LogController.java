@@ -1,5 +1,7 @@
 package com.ruoyi.monitor.controller;
 
+import com.ruoyi.common.core.controller.BaseController;
+import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.monitor.core.LogService;
 import com.ruoyi.monitor.domain.Index;
 import com.ruoyi.monitor.domain.Log;
@@ -11,14 +13,16 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/monitor/track")
-public class LogController {
+public class LogController extends BaseController {
 
     @Autowired
     private LogService logService;
 
     @GetMapping("/find-span")
-    public List<Index> findSpan(@ModelAttribute QLog qLog) {
-        return logService.findSpan(qLog);
+    public TableDataInfo findSpan(@ModelAttribute QLog qLog) {
+        startPage();
+        List<Index> list = logService.findSpan(qLog);
+        return getDataTable(list);
     }
 
     @GetMapping("/find-log")
