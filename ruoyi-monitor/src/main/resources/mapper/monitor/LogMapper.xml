@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ruoyi.monitor.mapper.LogMapper">
+
+    <resultMap id="IndexResultMap" type="com.ruoyi.monitor.domain.Index">
+        <id     property="id"        column="id"/>
+        <result property="trackId"   column="track_id"/>
+        <result property="time"      column="time"/>
+        <result property="level"     column="level"/>
+        <result property="type"      column="type"/>
+        <result property="businessId" column="business_id"/>
+    </resultMap>
+
+    <select id="getTrackIdForTransfer" resultType="String">
+        SELECT track_id
+        FROM monitor_time
+        WHERE `time` &lt;= NOW() - INTERVAL 5 MINUTE
+        ORDER BY `time` DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="getIndex" resultMap="IndexResultMap">
+        SELECT *
+        FROM monitor_index
+        <where>
+            <if test="trackId != null and trackId != ''">
+                AND track_id = #{trackId}
+            </if>
+            <if test="startTime != null">
+                AND `time` &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND `time` &lt;= #{endTime}
+            </if>
+            <if test="level != null and level != ''">
+                AND `level` = #{level}
+            </if>
+            <if test="businessId != null and businessId != ''">
+                AND business_id = #{businessId}
+            </if>
+            <if test="type != null and type != ''">
+                AND `type` = #{type}
+            </if>
+        </where>
+    </select>
+
+</mapper>

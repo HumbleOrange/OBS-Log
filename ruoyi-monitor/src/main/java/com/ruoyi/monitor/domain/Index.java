@@ -9,11 +9,11 @@ import java.sql.Timestamp;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class QLog {
+public class Index {
 
+    private String id;
     private String trackId;
-    private Timestamp startTime;
-    private Timestamp endTime;
+    private Timestamp time;
     private String level;
     private String type;
     private String businessId;

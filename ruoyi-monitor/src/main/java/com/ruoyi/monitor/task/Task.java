@@ -1,6 +1,5 @@
 package com.ruoyi.monitor.task;
 
-import com.alibaba.fastjson2.JSON;
 import com.ruoyi.monitor.domain.Log;
 import com.ruoyi.monitor.mapper.LogMapper;
 import com.ruoyi.monitor.service.ObsService;
@@ -19,12 +18,14 @@ public class Task {
 
     @Autowired
     private LogMapper logMapper;
+
     @Autowired
     private RedisService redisService;
+
     @Autowired
     private ObsService obsService;
 
-    //@Scheduled(cron = "0 0/5 * * * ?")
+    @Scheduled(cron = "0 0/5 * * * ?")
     public void transferFromRedisToObs() {
         List<String> trackIds = logMapper.getTrackIdForTransfer(ONCE_FIND_LIMIT);
         while (!trackIds.isEmpty()) {
@@ -43,9 +44,12 @@ public class Task {
     }
 
     @Transactional
+    //需要完善 1.logs为空 2.删除不存在的trackId
     public void transfer(String trackId) {
         List<Log> logs = redisService.getFromWrite(trackId);
-        obsService.put(trackId, JSON.toJSONString(logs));
+        if (!logs.isEmpty()) {
+            obsService.put(trackId, logs);
+        }
         logMapper.changePosition(trackId);
         logMapper.deleteTime(trackId);
         redisService.delete(trackId);

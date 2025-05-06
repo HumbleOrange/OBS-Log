@@ -1,6 +1,9 @@
 package com.ruoyi.monitor;
 
+import com.ruoyi.monitor.core.LogService;
+import com.ruoyi.monitor.domain.Index;
 import com.ruoyi.monitor.domain.Log;
+import com.ruoyi.monitor.domain.QLog;
 import com.ruoyi.monitor.service.ObsService;
 import com.ruoyi.monitor.service.RedisService;
 import com.ruoyi.monitor.store.Store;
@@ -17,10 +20,13 @@ public class TestController123 {
 
     @Autowired
     private RedisService redisService;
+
     @Autowired
     private ObsService obsService;
+
     @Autowired
     private Store store;
+
     @Autowired
     private Task task;
 
@@ -45,12 +51,12 @@ public class TestController123 {
 
     @PostMapping("/obs-put")
     public boolean obsPut(@RequestParam String key, @RequestParam String content) {
-        obsService.put(key, content);
+        //obsService.put(key, content);
         return true;
     }
 
     @GetMapping("/obs-get")
-    public String obsGet(@RequestParam String key) {
+    public List<Log> obsGet(@RequestParam String key) {
         return obsService.get(key);
     }
 
